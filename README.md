@@ -1,5 +1,5 @@
 # cybersecurity-labs
-various CTF that I have completed in TryHackMe
+various CTFs that I have completed in TryHackMe
 
 # Cybersecurity Labs & CTF Writeups
 
