@@ -1,9 +1,6 @@
-# cybersecurity-labs
-various CTF that I have completed in TryHackMe
-
-# Cybersecurity Labs & CTF Writeups
-
-This repository contains learning-focused writeups from hands-on cybersecurity labs and CTF-style exercises (TryHackMe).
+# Cyber Security Labs
+Various CTF that I have completed in TryHackMe.
+This repository contains learning-focused writeups from hands-on cybersecurity labs and CTF-style exercises.
 
 ## Skills Demonstrated
 - Network enumeration and analysis
