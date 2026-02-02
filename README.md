@@ -1,20 +1,3 @@
-# cybersecurity-labs
-various CTFs that I have completed in TryHackMe
+During analysis of a simulated Linux web server, I identified externally exposed SSH and HTTP services, with the web application hosting an outdated SweetRice CMS (v1.5.1). Enumeration revealed publicly accessible directories containing unencrypted database backups, which exposed application credentials due to improper access controls. From a SOC perspective, this represented a critical security gap caused by legacy software, insecure directory permissions, and lack of authentication on sensitive backup files, enabling unauthorized access to internal application data and initial foothold through the web layer.
 
-# Cybersecurity Labs & CTF Writeups
-
-This repository contains learning-focused writeups from hands-on cybersecurity labs and CTF-style exercises (TryHackMe).
-
-## Skills Demonstrated
-- Network enumeration and analysis
-- Linux and Windows fundamentals
-- Active Directory concepts
-- Web application security basics
-- Security tooling (Nmap, Wireshark, etc.)
-
-## Disclaimer
-All content is educational and focuses on methodology, defensive takeaways, and lessons learned.
-No flags, credentials, or proprietary lab content are included.
-
-## Platforms
-- TryHackMe
+The incident escalated due to insecure application configuration and overly permissive privilege delegation, ultimately resulting in root-level compromise. Remediation should include a policy-driven approach requiring regular vulnerability scanning and patch management for public-facing applications, strict access controls on backup files, and elimination of plaintext or weakly protected credentials. Additional controls should include implementing web application firewalls (WAFs), enforcing least-privilege sudo policies, auditing scheduled scripts for abuse, and enabling centralized logging and alerting for abnormal web activity, privilege escalation attempts, and unauthorized process execution. This exercise strengthened my ability to assess web application risk, analyze attack paths, and recommend actionable security controls from a SOC analyst perspective focused on prevention, detection, and response.
