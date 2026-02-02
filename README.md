@@ -1,20 +1,3 @@
-# cybersecurity-labs
-various CTF that I have completed in TryHackMe
+During analysis of a simulated Windows environment, I identified multiple externally exposed services, including web applications, SMB, and a database service. Enumeration revealed an outdated osCommerce web application accessible over HTTP/HTTPS, which presented an arbitrary file upload vulnerability due to insecure application configuration and weak authentication controls. From a SOC perspective, this represented a significant attack surface, as the vulnerable application allowed an attacker to gain initial remote code execution on the host through the web layer.
 
-# Cybersecurity Labs & CTF Writeups
-
-This repository contains learning-focused writeups from hands-on cybersecurity labs and CTF-style exercises (TryHackMe).
-
-## Skills Demonstrated
-- Network enumeration and analysis
-- Linux and Windows fundamentals
-- Active Directory concepts
-- Web application security basics
-- Security tooling (Nmap, Wireshark, etc.)
-
-## Disclaimer
-All content is educational and focuses on methodology, defensive takeaways, and lessons learned.
-No flags, credentials, or proprietary lab content are included.
-
-## Platforms
-- TryHackMe
+Following initial access, the compromise escalated due to insufficient endpoint hardening and credential protection. The system permitted privilege escalation to SYSTEM-level access, resulting in full compromise of the host. Post-exploitation analysis demonstrated how exposed services, legacy software, and lack of monitoring enabled credential harvesting and unauthorized access to sensitive accounts. This scenario reinforced the importance of patch management, service exposure reduction, credential protection, and endpoint monitoring, and strengthened my ability to assess attack paths, identify detection gaps, and clearly communicate impact and remediation recommendations from a SOC analyst perspective.
