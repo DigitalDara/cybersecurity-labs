@@ -1,20 +1,3 @@
-# cybersecurity-labs
-various CTF that I have completed in TryHackMe
+During analysis of a simulated Linux host, I identified multiple externally exposed services, including FTP, HTTP, and SSH running on a non-standard port. Enumeration revealed a publicly accessible web application powered by an outdated CMS Made Simple instance, which was vulnerable to a known SQL injection flaw. Additional investigation uncovered sensitive information exposed through FTP, including a file suggesting weak credential practices tied to a valid user account. From a SOC perspective, this represented a classic attack chain combining service exposure, vulnerable web applications, and poor credential hygiene, enabling initial access through multiple avenues.
 
-# Cybersecurity Labs & CTF Writeups
-
-This repository contains learning-focused writeups from hands-on cybersecurity labs and CTF-style exercises (TryHackMe).
-
-## Skills Demonstrated
-- Network enumeration and analysis
-- Linux and Windows fundamentals
-- Active Directory concepts
-- Web application security basics
-- Security tooling (Nmap, Wireshark, etc.)
-
-## Disclaimer
-All content is educational and focuses on methodology, defensive takeaways, and lessons learned.
-No flags, credentials, or proprietary lab content are included.
-
-## Platforms
-- TryHackMe
+The compromise escalated due to weak authentication controls and overly permissive sudo configurations, allowing privilege escalation to root without password prompts. Remediation should include a security policy framework enforcing timely patching of public-facing applications, restricting FTP usage or replacing it with secure alternatives, enforcing strong password policies with rate limiting and monitoring for brute-force attempts, and auditing sudo permissions to follow least-privilege principles. Additional controls such as centralized logging, alerts for abnormal SSH activity on non-standard ports, and regular privilege reviews would significantly reduce detection gaps. This exercise strengthened my ability to evaluate exposed services, assess privilege escalation risks, and recommend layered defensive controls aligned with SOC best practices.
